@@ -1,4 +1,21 @@
-import { use, useState } from 'react'
+import { useState } from 'react'
+
+
+const Button = (props) => {
+
+  return (
+    <button onClick={props.onClick}>{props.text}</button>
+  )
+}
+
+const StatisticLine = (props) => {
+
+  return(
+    <div>
+      <p>{props.text} {props.value}</p>
+    </div>
+  )
+}
 
 
 const Statistics = (props) => {
@@ -15,12 +32,12 @@ const Statistics = (props) => {
     return (
     <div>
       <h1>statistics</h1>
-      <p>good {props.good}</p>
-      <p>neutral {props.neutral}</p>
-      <p>bad {props.bad}</p>
-      <p>all {props.total}</p>
-      <p>average {props.average}</p>
-      <p>positive {props.positive} %</p>
+      <StatisticLine text="good" value={props.good} />
+      <StatisticLine text="neutral" value={props.neutral} />
+      <StatisticLine text="bad" value={props.bad} />
+      <StatisticLine text="all" value={props.total} />
+      <StatisticLine text="average" value={props.average} />
+      <StatisticLine text="positive" value={props.positive} />
     </div>
   )
 
@@ -41,33 +58,42 @@ const App = () => {
   const [positive, setPositive] = useState(0)
 
 
-  function calcAverage () {
-   setAverage((good * 1 - bad * 1) / total)
+  function calcAverage (updatedGood, updatedBad, updatedTotal) {
+   setAverage((updatedGood * 1 - updatedBad * 1) / updatedTotal)
   }
 
-  function calcPositive () {
-    setPositive(good / total)
+  function calcPositive (updatedGood, updatedTotal) {
+    setPositive((updatedGood / updatedTotal) * 100 +" %")
   }
 
   const handleGood = () => {
-  setGood(good + 1)
-  setTotal(total + 1)
-  calcAverage()
-  calcPositive()
+    // use const values to evade asynchronous updates
+    const updatedGood = good + 1
+    setGood(updatedGood)
+    const updatedTotal = total + 1
+    setTotal(updatedTotal)
+    calcAverage(updatedGood, bad, updatedTotal)
+    calcPositive(updatedGood, updatedTotal)
   }
 
   const handleNeutral = () => {
-  setNeutral(neutral + 1)
-  setTotal(total + 1)
-  calcAverage()
-  calcPositive()
+    // use const values to evade asynchronous updates
+    const updatedNeutral = neutral + 1
+    setNeutral(updatedNeutral)
+    const updatedTotal = total + 1
+    setTotal(updatedTotal)
+    calcAverage(good, bad, updatedTotal)
+    calcPositive(good, updatedTotal)
   }
 
   const handleBad = () => {
-  setBad(bad + 1)
-  setTotal(total + 1)
-  calcAverage()
-  calcPositive()
+    // use const values to evade asynchronous updates
+    const updatedBad = bad + 1
+    setBad(updatedBad)
+    const updatedTotal = total + 1
+    setTotal(updatedTotal)
+    calcAverage(good, updatedBad, updatedTotal)
+    calcPositive(good, updatedTotal)
   }
 
 
@@ -75,9 +101,9 @@ const App = () => {
   return (
     <div>
       <h1>give feedback</h1>
-      <button onClick={handleGood}>good</button>
-      <button onClick={handleNeutral}>neutral</button>
-      <button onClick={handleBad}>bad</button>
+      <Button onClick={handleGood} text="good"/>
+      <Button onClick={handleNeutral} text="neutral" />
+      <Button onClick={handleBad} text="bad" />
       <Statistics
           good={good} neutral={neutral}
           bad={bad} total={total} 
