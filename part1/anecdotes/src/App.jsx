@@ -1,5 +1,15 @@
 import { useState } from 'react'
 
+
+const Button = (props) => {
+  return (
+    <button onClick={props.onClick}>
+      {props.text}
+    </button>
+  )
+}
+
+
 const App = () => {
   const anecdotes = [
     'If it hurts, do it more often.',
@@ -14,9 +24,31 @@ const App = () => {
    
   const [selected, setSelected] = useState(0)
 
+
+  function getRandomIntInclusive(min, max) {
+  const minCeiled = Math.ceil(min);
+  const maxFloored = Math.floor(max);
+  return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled);
+  // The maximum is inclusive and the minimum is inclusive
+  }
+
+
+
+  const handleNext = () => {
+
+    const newQuote = getRandomIntInclusive(0, anecdotes.length - 1)
+    if (newQuote == selected) {
+      handleNext()
+    } else {
+      setSelected(newQuote)
+    }
+  }
+
+
   return (
     <div>
-      {anecdotes[selected]}
+      {anecdotes[selected]}<br></br>
+      <Button onClick={handleNext} text="next anecdote" />
     </div>
   )
 }
