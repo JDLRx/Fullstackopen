@@ -9,8 +9,40 @@ const Button = (props) => {
   )
 }
 
+const VotedAnecdote = (props) => {
+
+  if (props.mostVotes.votes == 0){
+
+    return (
+      <div></div>
+    )
+  } else {
+    
+    return (
+    <div>
+      <h1>{props.title}</h1>
+      <p>{props.mostVotes.anecdote}</p>
+      <p>has {props.mostVotes.votes} votes</p>
+    </div>
+  )
+  }
+
+  
+}
+
+const Anecdote = (props) => {
+
+  return (
+    <div>
+      <h1>{props.title}</h1>
+      <p>{props.anecdotes[props.selected]}</p>
+    </div>
+  )
+}
+
 
 const App = () => {
+
   const anecdotes = [
     'If it hurts, do it more often.',
     'Adding manpower to a late software project makes it later!',
@@ -23,7 +55,11 @@ const App = () => {
   ]
    
   const [selected, setSelected] = useState(0)
-
+  const [votes, setVotes] = useState({})
+  const [mostVotes, setMostVotes] = useState({
+    "anecdote": "",
+    "votes": 0,
+  })
 
   function getRandomIntInclusive(min, max) {
   const minCeiled = Math.ceil(min);
@@ -44,11 +80,38 @@ const App = () => {
     }
   }
 
+  const handleVotes = () => {
+
+    let currentVotes = {...votes}
+    let mostVoted = {...mostVotes}
+
+
+    if (currentVotes[selected] == undefined) {
+      currentVotes[selected] = 0
+    }
+
+    currentVotes[selected] += 1
+    setVotes(currentVotes)
+    
+    if (mostVoted.anecdote == ""){
+      mostVoted = {"anecdote": anecdotes[selected], "votes":currentVotes[selected]}
+      setMostVotes(mostVoted)
+    } else if (mostVoted.anecdote != "") {
+      if (mostVoted.votes < currentVotes[selected]) {
+        mostVoted = {"anecdote": anecdotes[selected], "votes":currentVotes[selected]}
+        setMostVotes(mostVoted)
+      }
+    }
+  }
+
 
   return (
     <div>
-      {anecdotes[selected]}<br></br>
+      <Anecdote anecdotes={anecdotes} selected={selected} title="Anecdote of the day"/>
+      <p>has {votes[selected]} votes</p>
+      <Button onClick={handleVotes} text="vote" />
       <Button onClick={handleNext} text="next anecdote" />
+      <VotedAnecdote mostVotes={mostVotes} selected={selected} title="Anecdote with most votes" />
     </div>
   )
 }
